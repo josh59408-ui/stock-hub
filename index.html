@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>投資研究工作台</title>
+<meta name="description" content="藏鋒資本｜股票研究工具總入口">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 20 11 9l5 6 4-5 9 10z' fill='%23c9a86a'/%3E%3Cpath d='M6 21h20l-10 9z' fill='%23c9a86a' opacity='.45'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1015;
+    --surface: #151920;
+    --surface-hover: #1a1f28;
+    --border: #252b35;
+    --border-hover: #3b4350;
+    --text: #e7e9ec;
+    --muted: #8f97a4;
+    --faint: #5c6472;
+    --gold: #c9a86a;
+    --gold-soft: rgba(201, 168, 106, 0.10);
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Noto Sans TC", system-ui, -apple-system, "Microsoft JhengHei", sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 56px 16px 64px;
+  }
+
+  /* ---------- 頁首 ---------- */
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .brand svg { width: 44px; height: 44px; flex: none; }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    color: var(--gold);
+    font-weight: 500;
+  }
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+  }
+  .meta {
+    text-align: right;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .meta .clock { color: var(--text); font-size: 15px; }
+  .market { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
+  .dot.open { background: #4fb38a; box-shadow: 0 0 0 3px rgba(79, 179, 138, 0.18); }
+
+  /* ---------- 全部開啟 ---------- */
+  .actions { display: flex; align-items: center; gap: 20px; }
+  .open-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: #15120c;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: filter 0.15s, transform 0.15s;
+  }
+  .open-all:hover { filter: brightness(1.08); }
+  .open-all:active { transform: translateY(1px); }
+  .open-all:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+  .open-all .count {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.14);
+    border-radius: 4px;
+    padding: 0 6px;
+  }
+  .notice {
+    margin: -20px 0 32px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--gold-soft);
+    border: 1px solid rgba(201, 168, 106, 0.35);
+    border-radius: 8px;
+  }
+
+  /* ---------- 分類區塊 ---------- */
+  section { margin-bottom: 36px; }
+  h2 {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  h2::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+  }
+
+  /* ---------- 卡片 ---------- */
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px 20px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
+  }
+  .card:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+  }
+  .card:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .card-top { display: flex; align-items: center; gap: 10px; }
+  .key {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    width: 22px; height: 22px;
+    display: grid; place-items: center;
+    border: 1px solid var(--border-hover);
+    border-radius: 5px;
+    color: var(--muted);
+    flex: none;
+  }
+  .tag {
+    font-size: 12px;
+    color: var(--gold);
+    background: var(--gold-soft);
+    padding: 2px 9px;
+    border-radius: 999px;
+  }
+  .arrow {
+    margin-left: auto;
+    color: var(--faint);
+    transition: color 0.15s, transform 0.15s;
+  }
+  .card:hover .arrow { color: var(--gold); transform: translate(2px, -2px); }
+
+  .card h3 { font-size: 18px; font-weight: 700; letter-spacing: 0.02em; }
+  .card p { font-size: 14px; color: var(--muted); flex: 1; }
+  .domain {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--faint);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  kbd {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    border: 1px solid var(--border-hover);
+    border-radius: 4px;
+    padding: 0 5px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 600px) {
+    .wrap { padding-top: 32px; }
+    h1 { font-size: 22px; }
+    .meta { text-align: left; }
+    .actions { width: 100%; justify-content: space-between; }
+    .grid { grid-template-columns: 1fr; }
+    .key { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M4 28 16 12l7 9 6-7 15 14z" fill="none" stroke="#c9a86a" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M16 12l3 16M23 21l-4 7M29 14l3 14" stroke="#c9a86a" stroke-width="1.1" opacity=".6"/>
+        <path d="M8 31h32L25 45z" fill="#c9a86a" opacity=".35"/>
+      </svg>
+      <div>
+        <div class="eyebrow">GLACIER CAPITAL</div>
+        <h1>投資研究工作台</h1>
+      </div>
+    </div>
+    <div class="actions">
+      <div class="meta">
+        <div class="clock" id="clock">--</div>
+        <div class="market"><span class="dot" id="dot"></span><span id="market">台股</span></div>
+      </div>
+      <button class="open-all" id="openAll" type="button">
+        <span>全部開啟</span><span class="count" id="count"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="notice" id="notice" role="status" hidden></div>
+
+  <main id="app"></main>
+
+  <footer>
+    <span>藏鋒資本 · 研究工具總入口</span>
+    <span>按數字鍵 <kbd>1</kbd>–<kbd id="lastKey">6</kbd> 可直接開啟對應網站</span>
+  </footer>
+</div>
+
+<script>
+  // ============================================================
+  // 要新增、修改或刪除網站，只要改這個清單就好
+  // category：分類名稱（相同分類會排在同一區）
+  // ============================================================
+  const SITES = [
+    {
+      name: "藏鋒資本｜趨勢選股",
+      desc: "台股 / 美股趨勢選股系統，可按日期查詢篩選清單或搜尋個股。",
+      url: "https://josh59408-ui.github.io/glacier/",
+      category: "選股系統",
+    },
+    {
+      name: "優分析 Pro｜林區十倍股",
+      desc: "彼得林區成長股篩選儀表板。",
+      url: "https://pro.uanalyze.com.tw/lab/dashboard/lynch-tengrower/34907",
+      category: "選股系統",
+    },
+    {
+      name: "投資產業資訊",
+      desc: "價值投資產業情報與投資論點追蹤板，依產業分類掌握多空變化。",
+      url: "https://claude.ai/code/artifact/b69b22ee-f4a9-4077-95c1-640f8236d621",
+      category: "產業情報",
+    },
+    {
+      name: "PEG 選股觀測表",
+      desc: "Google 試算表：PEG 指標選股觀測清單。",
+      url: "https://docs.google.com/spreadsheets/d/12v_rQ44yFcywv3HW9BNManj9CDiWkREupE-5TFjYZEc/edit?gid=1295165589#gid=1295165589",
+      category: "追蹤表單",
+    },
+    {
+      name: "報告機器人",
+      desc: "Google 試算表：研究報告整理。",
+      url: "https://docs.google.com/spreadsheets/d/1rbgSS7As3_pdZNw0-FmpwpewDTgphdOFLmNFHdxqRls/edit?gid=0#gid=0",
+      category: "追蹤表單",
+    },
+    {
+      name: "TradingView",
+      desc: "技術線圖工作區（預設台積電 2330）。",
+      url: "https://tw.tradingview.com/chart/Q2RpqiZD/?symbol=TWSE%3A2330",
+      category: "技術線圖",
+    },
+  ];
+
+  // ---------- 畫出卡片 ----------
+  const app = document.getElementById("app");
+  const groups = {};
+  SITES.forEach((s, i) => { (groups[s.category] ||= []).push({ ...s, key: i + 1 }); });
+
+  const escape = (str) => str.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  app.innerHTML = Object.entries(groups).map(([cat, items]) => `
+    <section>
+      <h2>${escape(cat)}</h2>
+      <div class="grid">
+        ${items.map((s) => `
+          <a class="card" href="${escape(s.url)}" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <span class="key">${s.key <= 9 ? s.key : ""}</span>
+              <span class="tag">${escape(cat)}</span>
+              <span class="arrow" aria-hidden="true">↗</span>
+            </div>
+            <h3>${escape(s.name)}</h3>
+            <p>${escape(s.desc)}</p>
+            <div class="domain">${escape(new URL(s.url).hostname)}</div>
+          </a>`).join("")}
+      </div>
+    </section>`).join("");
+
+  document.getElementById("lastKey").textContent = Math.min(SITES.length, 9);
+
+  // ---------- 數字鍵快速開啟 ----------
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || /input|textarea/i.test(e.target.tagName)) return;
+    const n = Number(e.key);
+    if (n >= 1 && n <= SITES.length) window.open(SITES[n - 1].url, "_blank", "noopener");
+  });
+
+  // ---------- 一次開啟全部網站 ----------
+  // 瀏覽器預設只允許一次點擊開一個新分頁，第一次使用需允許本網站的「彈出式視窗」
+  const notice = document.getElementById("notice");
+  document.getElementById("count").textContent = SITES.length;
+  document.getElementById("openAll").addEventListener("click", () => {
+    let blocked = 0;
+    SITES.forEach((s) => {
+      const w = window.open(s.url, "_blank");
+      if (w) w.opener = null;
+      else blocked++;
+    });
+    if (blocked) {
+      notice.innerHTML = `瀏覽器擋下了 <b>${blocked}</b> 個分頁。請點網址列右側的「彈出式視窗已封鎖」圖示，選擇<b>一律允許</b>，再按一次「全部開啟」。`;
+      notice.hidden = false;
+    } else {
+      notice.hidden = true;
+    }
+  });
+
+  // ---------- 台北時間與台股開盤狀態 ----------
+  function tick() {
+    const now = new Date();
+    const tw = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Taipei" }));
+    const pad = (n) => String(n).padStart(2, "0");
+    const week = "日一二三四五六"[tw.getDay()];
+    document.getElementById("clock").textContent =
+      `${tw.getFullYear()}-${pad(tw.getMonth() + 1)}-${pad(tw.getDate())} (${week}) ${pad(tw.getHours())}:${pad(tw.getMinutes())}`;
+    const mins = tw.getHours() * 60 + tw.getMinutes();
+    const weekday = tw.getDay() >= 1 && tw.getDay() <= 5;
+    const open = weekday && mins >= 540 && mins < 810; // 09:00–13:30
+    document.getElementById("dot").classList.toggle("open", open);
+    document.getElementById("market").textContent = open ? "台股交易中" : "台股已收盤";
+  }
+  tick();
+  setInterval(tick, 30000);
+</script>
+</body>
+</html>
